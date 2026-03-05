@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로블록스 서버 접속 중...</title>
+</head>
+<body>
+    <h3>로블록스 특정 서버로 이동 중입니다...</h3>
+    <p>"Roblox를 여시겠습니까?" 창이 뜨면 허용을 눌러주세요.</p>
+
+    <script>
+        // 1. 현재 주소(URL)에서 파라미터(placeId, jobId) 값 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const placeId = urlParams.get('placeId');
+        const jobId = urlParams.get('jobId');
+
+        // 2. 값이 정상적으로 들어왔는지 확인
+        if (placeId !== null && jobId !== null) {
+            
+            // 3. 로블록스 딥링크 주소 조립
+            const robloxLink = "roblox://experiences/start?placeId=" + placeId + "&gameInstanceId=" + jobId;
+            
+            // 4. 조립된 딥링크로 즉시 이동 (리다이렉트)
+            window.location.href = robloxLink;
+
+        } else {
+            // 파라미터가 빠져있을 경우 에러 메시지 출력
+            document.body.innerHTML = "<h3>잘못된 접근입니다.</h3><p>placeId 또는 jobId가 존재하지 않습니다.</p>";
+        }
+    </script>
+</body>
+</html>
