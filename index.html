@@ -6,27 +6,46 @@
     <title>로블록스 서버 접속 중...</title>
 </head>
 <body>
-    <h3>로블록스 특정 서버로 이동 중입니다...</h3>
+    <h3>로블록스 서버로 이동 중입니다...</h3>
     <p>"Roblox를 여시겠습니까?" 창이 뜨면 허용을 눌러주세요.</p>
 
     <script>
-        // 1. 현재 주소(URL)에서 파라미터(placeId, jobId) 값 추출
+        // 1. 현재 주소(URL)에서 파라미터 값 추출
         const urlParams = new URLSearchParams(window.location.search);
         const placeId = urlParams.get('placeId');
         const jobId = urlParams.get('jobId');
+        
+        // VIP 서버 링크에서 쓰는 파라미터 이름 (linkCode 또는 privateServerLinkCode)
+        const linkCode = urlParams.get('privateServerLinkCode') || urlParams.get('linkCode');
 
-        // 2. 값이 정상적으로 들어왔는지 확인
-        if (placeId !== null && jobId !== null) {
-            
-            // 3. 로블록스 딥링크 주소 조립
-            const robloxLink = "roblox://experiences/start?placeId=" + placeId + "&gameInstanceId=" + jobId;
+        // 2. placeId가 무조건 있어야 실행 가능
+        if (placeId !== null) {
+            let robloxLink = "";
+
+            // 3. 분기점: VIP 서버인지 일반 서버인지 확인
+            if (linkCode !== null) {
+                // [VIP 서버] 링크 코드가 있을 경우
+                robloxLink = "roblox://experiences/start?placeId=" + placeId + "&linkCode=" + linkCode;
+                document.body.innerHTML += "<p style='color: green;'>✅ VIP 서버로 연결합니다.</p>";
+            } 
+            else if (jobId !== null) {
+                // [일반 공개 서버] jobId가 있을 경우
+                robloxLink = "roblox://experiences/start?placeId=" + placeId + "&gameInstanceId=" + jobId;
+                document.body.innerHTML += "<p style='color: blue;'>✅ 특정 공개 서버로 연결합니다.</p>";
+            } 
+            else {
+                // 그냥 placeId만 덜렁 올 경우 (게임 메인 화면 접속)
+                robloxLink = "roblox://experiences/start?placeId=" + placeId;
+            }
             
             // 4. 조립된 딥링크로 즉시 이동 (리다이렉트)
-            window.location.href = robloxLink;
+            setTimeout(() => {
+                window.location.href = robloxLink;
+            }, 500); // 0.5초 대기 후 이동 (안정성 확보)
 
         } else {
             // 파라미터가 빠져있을 경우 에러 메시지 출력
-            document.body.innerHTML = "<h3>잘못된 접근입니다.</h3><p>placeId 또는 jobId가 존재하지 않습니다.</p>";
+            document.body.innerHTML = "<h3>잘못된 접근입니다.</h3><p>게임을 식별할 수 있는 placeId가 존재하지 않습니다.</p>";
         }
     </script>
 </body>
